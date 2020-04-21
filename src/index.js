@@ -13,7 +13,7 @@ const Container = styled.div`
 
 ReactDOM.render(
   <Container>
-    <Calendar />
+    <Calendar dateClickedCallback={(date) => console.log(date)} />
   </Container>,
   document.getElementById('root')
 );

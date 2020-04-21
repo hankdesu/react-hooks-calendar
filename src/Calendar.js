@@ -36,15 +36,20 @@ const Body = styled.div`
 
 const DayWrapper = styled.div`
     align-items: center;
-    background-color: ${({ today }) => today ? '#fff' : 'auto'};
-    color: ${({ today }) => today ? '#ff9591' : 'auto'};
+    background-color: ${({ isToday, selected }) => {
+        if (isToday && !selected) return '#fff';
+        if (selected) return '#ff3d6e';
+        return '#ff9591'
+    }};
+    color: ${({ isToday }) => isToday ? '#ff9591' : 'auto'};
+    cursor: pointer;
     display: flex;
     height: 50px;
     justify-content: center;
     width: 14.2%;
 `;
 
-const Calendar = () => {
+const Calendar = (props) => {
     const DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     const DAYS_OF_LEAP = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     const WEEKS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
@@ -55,6 +60,7 @@ const Calendar = () => {
     const [month, setMonth] = useState(date.getMonth());
     const [year, setYear] = useState(date.getFullYear());
     const [startDate, setStartDate] = useState(getStartDate());
+    const [clickedDate, setClickedDate] = useState(null);
 
     useEffect(() => {
         setDay(date.getDate());
@@ -76,15 +82,39 @@ const Calendar = () => {
         }
     }
 
+    function onDateClicked(e) {
+        const { id } = e.target;
+        const value = Number(id) - startDate + 1
+        let result = null
+        if (clickedDate && clickedDate.getFullYear() && month === clickedDate.getMonth() && value === clickedDate.getDate()) {
+            setClickedDate(result);
+            dateClickedCallback(result);
+        } else {
+            result = new Date(year, month, Number(value));
+            setClickedDate(result);
+            dateClickedCallback(result);
+        }
+    }
+
+    function dateClickedCallback(result) {
+        if (props.dateClickedCallback) {
+            props.dateClickedCallback(result);
+        }
+    }
+
     function renderDays() {
         const days = ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) ? DAYS_OF_LEAP : DAYS;
         const blankDate = new Array(startDate).fill('blank');
         const daysOfMonth = [...blankDate, ...new Array(days[month])];
         const today = new Date();
         return daysOfMonth.map((day, index) => {
-            const value = index - blankDate.length + 1;
+            const value = index - startDate + 1;
+            const isToday = year === today.getFullYear() && month === today.getMonth() && value === today.getDate();
+            const selected = clickedDate
+                ? year === clickedDate.getFullYear() && month === clickedDate.getMonth() && value === clickedDate.getDate()
+                : false;
             return (
-                <DayWrapper today={year === today.getFullYear() && month === today.getMonth() && value === today.getDate()}>
+                <DayWrapper key={index} id={index} isToday={isToday} onClick={onDateClicked} selected={selected}>
                     {day !== 'blank' ? value : ''}
                 </DayWrapper>
             );
@@ -99,7 +129,7 @@ const Calendar = () => {
                 <MonthButton id="next" onClick={onMonthChange}>Next Month</MonthButton>
             </Header>
             <Body>
-                {WEEKS.map(week => <DayWrapper>{week}</DayWrapper>)}
+                {WEEKS.map((week, index) => <DayWrapper key={index}>{week}</DayWrapper>)}
                 {renderDays()}
             </Body>
         </Wrapper>

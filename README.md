@@ -4,4 +4,11 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 Use react hooks to implement a simple calendar.
 
-Just clone it and run script `npm start`
+Requirement
+
+`
+nodejs npm
+`
+
+After install requirement, just clone it run `npm install` and `npm start`
+ should be work, hope you enjoy it.

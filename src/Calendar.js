@@ -59,17 +59,17 @@ const Calendar = (props) => {
     const [day, setDay] = useState(date.getDate());
     const [month, setMonth] = useState(date.getMonth());
     const [year, setYear] = useState(date.getFullYear());
-    const [startDate, setStartDate] = useState(getStartDate());
+    const [startDate, setStartDate] = useState(getStartDate(date));
     const [clickedDate, setClickedDate] = useState(null);
 
     useEffect(() => {
         setDay(date.getDate());
         setMonth(date.getMonth());
         setYear(date.getFullYear());
-        setStartDate(getStartDate());
+        setStartDate(getStartDate(date));
       }, [date]);
 
-    function getStartDate() {
+    function getStartDate(date) {
         return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
     }
 
